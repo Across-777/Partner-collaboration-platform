@@ -16,6 +16,7 @@ import {
 } from 'antd';
 import SelectBrandModal from './components/SelectBrandModal';
 import SelectCategoryModal from './components/SelectCategoryModal';
+import CategoryAttributes from './components/CategoryAttributes';
 
 const AddCommodity = props => {
   // form 样式
@@ -30,6 +31,10 @@ const AddCommodity = props => {
     selectCategoryModalVisible,
     treeChildrenData,
     treeData,
+    formCategoryId,
+    formCategoryName,
+    categoryAttrVisible,
+    categoryAttrData,
   } = props;
   // 新增商品表单提交事件
   const searchCommodityRef = React.createRef();
@@ -42,13 +47,6 @@ const AddCommodity = props => {
     dispatch({
       type: 'addcommodity/updateState',
       payload: { selectBrandModalVisible: true },
-    });
-  };
-  // 填充 brand 的Form.Item
-  const changeBrandName = () => {
-    searchCommodityRef.current.setFieldsValue({
-      brandId: formBrandName,
-      brandName: formBrandName,
     });
   };
 
@@ -69,10 +67,19 @@ const AddCommodity = props => {
     });
   };
   // 改变品牌名称
-  const changeFormBrandName = (id,brandName) => {
+  const changeFormBrandName = (id, brandName) => {
     dispatch({
       type: 'addcommodity/updateState',
       payload: { formBrandName: brandName },
+    });
+  };
+
+  // 填充 brand 的Form.Item
+  const changeBrandName = () => {
+    searchCommodityRef.current.setFieldsValue({
+      brandName: formBrandName,
+      commodityName: formBrandName + ' ' + formCategoryName,
+      description: formBrandName + ' ' + formCategoryName,
     });
   };
   // ------------------------------selectCategoryModal funtion-----------------------
@@ -91,16 +98,36 @@ const AddCommodity = props => {
       payload: { id, treeData },
     });
   };
-  // 点击工业节点，查询所工业分类绑定的属性组
-  const onSelectTreeNode = (value, node) => {
-    console.log(node.node.key, node.node.title);
-    // dispatch({
-    //   type: 'industryclassification/getGroupInfo',
-    //   payload: {
-    //     categoryId: node.node.key,
-    //     categoryName: node.node.title,
-    //   },
-    // });
+  // 点击工业节点 改变工业id与name
+  const onSelectTreeNode = (value, e) => {
+    // console.log('e.node',value,e);
+    dispatch({
+      type: 'addcommodity/updateState',
+      payload: {
+        formCategoryId: e.node.key,
+        formCategoryName: e.node.title,
+      },
+    });
+  };
+
+  // 填充 category 的Form.Item
+  const changeCategoryName = () => {
+    searchCommodityRef.current.setFieldsValue({
+      // brandId: formBrandId,
+      categoryName: formCategoryName,
+      categoryLongName: formCategoryName,
+      commodityName: formBrandName + ' ' + formCategoryName,
+      description: formBrandName + ' ' + formCategoryName,
+    });
+    getCategoryAttrInfo();
+  };
+
+  // 获取属性组数据
+  const getCategoryAttrInfo = () => {
+    dispatch({
+      type: 'addcommodity/getCategoryAttributesInfo',
+      payload: { categoryId: formCategoryId, categoryAttrVisible: true },
+    });
   };
 
   return (
@@ -119,6 +146,7 @@ const AddCommodity = props => {
           getChildrenData={getChildrenData}
           treeChildrenData={treeChildrenData}
           onSelectTreeNode={onSelectTreeNode}
+          changeCategoryName={changeCategoryName}
         />
         <Form
           {...layout}
@@ -126,7 +154,7 @@ const AddCommodity = props => {
           onFinish={searchCommoditySubmit}
         >
           <Row>
-            <Col className="preview" span={24}>
+            <Col className="preview" span={23}>
               <span className="previewSpan">&nbsp;</span>
               <h2>基本属性</h2>
             </Col>
@@ -135,7 +163,11 @@ const AddCommodity = props => {
             <Col span={12}>
               <Row>
                 <Col span={10}>
-                  <Form.Item label="品牌" name="brandName">
+                  <Form.Item
+                    label="品牌"
+                    name="brandName"
+                    rules={[{ required: true }]}
+                  >
                     <Input />
                   </Form.Item>
                 </Col>
@@ -145,7 +177,11 @@ const AddCommodity = props => {
                   </Button>
                 </Col>
                 <Col span={10}>
-                  <Form.Item label="工业分类" name="categoryName">
+                  <Form.Item
+                    label="工业分类"
+                    name="categoryName"
+                    rules={[{ required: true }]}
+                  >
                     <Input />
                   </Form.Item>
                 </Col>
@@ -193,6 +229,7 @@ const AddCommodity = props => {
                   name="model"
                   labelCol={{ span: 4 }}
                   wrapperCol={{ span: 19 }}
+                  rules={[{ required: true }]}
                 >
                   <Input />
                 </Form.Item>
@@ -205,12 +242,16 @@ const AddCommodity = props => {
               <Row>
                 <Col span={10}>
                   <Form.Item label="质量等级" name="qualityLevel">
-                    <Input />
+                    <Input defaultValue="合格" />
                   </Form.Item>
                 </Col>
                 <Col span={2}></Col>
                 <Col span={10}>
-                  <Form.Item label="单位" name="unit">
+                  <Form.Item
+                    label="单位"
+                    name="unit"
+                    rules={[{ required: true }]}
+                  >
                     <Input />
                   </Form.Item>
                 </Col>
@@ -223,6 +264,7 @@ const AddCommodity = props => {
                   name="operatingDepartment"
                   labelCol={{ span: 4 }}
                   wrapperCol={{ span: 19 }}
+                  rules={[{ required: true }]}
                 >
                   <Input />
                 </Form.Item>
@@ -237,8 +279,9 @@ const AddCommodity = props => {
                 name="commodityName"
                 labelCol={{ span: 2 }}
                 wrapperCol={{ span: 22 }}
+                rules={[{ required: true }]}
               >
-                <Input />
+                <Input readOnly disabled={true} />
               </Form.Item>
             </Col>
             <Col span={23}>
@@ -247,6 +290,7 @@ const AddCommodity = props => {
                 name="description"
                 labelCol={{ span: 2 }}
                 wrapperCol={{ span: 22 }}
+                rules={[{ required: true }]}
               >
                 <Input.TextArea />
               </Form.Item>
@@ -344,7 +388,10 @@ const AddCommodity = props => {
               </Form.Item>
             </Col>
           </Row>
-
+          {categoryAttrVisible && (
+            // <div>{JSON.stringify(categoryAttrData)}</div>
+            <CategoryAttributes categoryAttrData={categoryAttrData} />
+          )}
           <Row justify="end">
             <Col className="goodsSubmitButton">
               <Button htmlType="button">

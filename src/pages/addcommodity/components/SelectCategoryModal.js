@@ -1,40 +1,7 @@
 import React from 'react';
-import {
-  Row,
-  Col,
-  Form,
-  Button,
-  Table,
-  Modal,
-  Space,
-  Input,
-  Radio,
-  Tree,
-} from 'antd';
+import { Modal, Space, Input, Radio, Tree } from 'antd';
 const { Search } = Input;
-const columns = [
-  {
-    title: '品牌编码',
-    dataIndex: 'id',
-  },
-  {
-    title: '品牌名称',
-    dataIndex: 'name',
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'operate_time',
-    key: 'operate_time ',
-  },
-];
-const data = [];
-for (let i = 1; i < 46; i++) {
-  data.push({
-    id: i,
-    name: `Edward King ${i}`,
-    operate_time: `2020-08-${i}`,
-  });
-}
+
 export default props => {
   const {
     selectCategoryModalVisible,
@@ -42,11 +9,14 @@ export default props => {
 
     treeData,
     getChildrenData,
+
+    onSelectTreeNode,
+    changeCategoryName,
   } = props;
   // Modal 确认事件
   const handleOk = () => {
     closeSelectCategoryModal();
-    // changeBrandName();
+    changeCategoryName();
   };
   // Modal 取消事件
   const handleCancel = () => {
@@ -65,18 +35,6 @@ export default props => {
         getChildrenData(key, treeData);
         resolve();
       }, 1);
-    });
-  };
-  // 点击工业节点
-  const onSelectTreeNode = (value, e) => {
-    // console.log(node.node.key, node.node.title);
-    console.log(e.node);
-    dispatch({
-      type: 'addcommodity/update',
-      payload: {
-        categoryId: node.node.key,
-        categoryName: node.node.title,
-      },
     });
   };
 

@@ -1,13 +1,24 @@
 import { updateTreeData, dealChild } from '../utils/dealData';
-import { getChildrenInfoService } from '../services/classificationService';
+import {
+  getChildrenInfoService,
+  getGroupInfoService,
+} from '../services/classificationService';
+import {
+  findAttrByGroupIdService,
+  findPreviewAttrService,
+} from '../services/attributesService';
 
 export default {
   namespace: 'addcommodity',
   state: {
     selectBrandModalVisible: false,
     selectCategoryModalVisible: false,
-    formBrandName: 'test',
+    formBrandId: '0',
+    formBrandName: '',
+    formCategoryId: '',
     formCategoryName: '',
+    categoryAttrVisible: false,
+    categoryAttrData: {},
     treeData: [],
     data: {
       success: '',
@@ -58,12 +69,24 @@ export default {
           ],
         },
       ],
-      total: 1,
-      page: 1,
-      size: 10,
     },
   },
   effects: {
+    // 查询所工业分类绑定的属性组,查找所有属性组的属性
+    *getCategoryAttributesInfo({ payload }, { call, select, put }) {
+      let groupInfo = yield call(getGroupInfoService, payload.categoryId);
+      let { data } = yield call(findPreviewAttrService, groupInfo.data.content);
+      // console.log(data);
+      yield put({
+        type: 'updateState',
+        payload: {
+          categoryAttrData: data,
+          categoryAttrVisible: payload.categoryAttrVisible,
+        },
+      });
+    },
+
+    // --------------------------------------------
     // 初始化 工业树 数据,并将展示数据清空
     *initTree({ payload }, { call, select, put }) {
       let tree = yield call(getChildrenInfoService, payload.id);

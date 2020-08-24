@@ -118,38 +118,38 @@ const changeBind = (groupId, attrArr) => {
 const AttrGroup = [
   {
     id: 1,
-    name: '属性组1',
+    name: '普通1',
     categoryId: '1',
     sort: '1',
-    attrArr: [1],
+    attrArr: [1, 5],
   },
   {
     id: 2,
-    name: '属性组2',
+    name: '销售2号',
     categoryId: 1,
     sort: '3',
-    attrArr: [1, 3],
+    attrArr: [3, 6],
   },
   {
     id: 3,
-    name: '属性组3',
+    name: '销售1号',
     categoryId: 1,
     sort: '4',
-    attrArr: [2, 3],
+    attrArr: [7, 8],
   },
   {
     id: 4,
     name: '属性组4',
     categoryId: 1,
     sort: '2',
-    attrArr: [1, 2, 3, 4],
+    attrArr: [2, 9, 11, 12, 13],
   },
   {
     id: 5,
     name: '属性组5',
     categoryId: 2,
     sort: '1',
-    attrArr: [2],
+    attrArr: [1, 2, 3, 4, 5, 6],
   },
 ];
 
